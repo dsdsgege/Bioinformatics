@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Main {
@@ -38,6 +40,7 @@ public class Main {
         public BufferedReader getReader() {
             try {
                 return new BufferedReader(new FileReader(inputName + "." + inputFormat));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -56,6 +59,7 @@ public class Main {
         {
             BufferedReader reader = new InputMaker("rosalind_dna", "txt").getReader();
             String input = reader.readLine();
+            reader.close();
 
             String outputString = "";
             System.out.println(input);
@@ -86,6 +90,7 @@ public class Main {
         {
             BufferedReader reader = new InputMaker("rosalind_rna", "txt").getReader();
             char[] strInArr = reader.readLine().toCharArray();
+            reader.close();
             for (int i = 0; i < strInArr.length; i++) {
                 if (strInArr[i] == 'T') strInArr[i] = 'U';
             }
@@ -100,6 +105,7 @@ public class Main {
         {
             BufferedReader reader = new InputMaker("rosalind_revc", "txt").getReader();
             String inputString = reader.readLine();
+            reader.close();
             char[] strInArray = inputString.toCharArray();
 
             int length = strInArray.length;
@@ -130,5 +136,80 @@ public class Main {
             OutputMaker outputMaker = new OutputMaker("rosalind_revc_output","txt");
             outputMaker.makeOutput(new String(strInArray));
         }
+
+        //Wascally Wabbits
+        {
+            BufferedReader reader = new InputMaker("rosalind_fib","txt").getReader();
+            try {
+                String line = reader.readLine();
+                reader.close();
+                int n = Integer.parseInt(line.split(" ")[0]);
+                int k = Integer.parseInt(line.split(" ")[1]);
+                System.out.println(n+ " " + k);
+                long[] integers = new long[40];
+                integers[0] = 1;
+                integers[1] = 1;
+                int i;
+                for(i = 2; i < n; i++) {
+                    integers[i] = integers[i-1] + (integers[i-2] * k);
+                }
+
+                OutputMaker outputMaker = new OutputMaker("rosalind_fib_out","txt");
+                outputMaker.makeOutput(String.valueOf(integers[i-1]) + "\n");
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //Computing GC Content
+        {
+            HashMap<String, Double> map = new HashMap<>();
+            BufferedReader reader = new InputMaker("rosalind_gc","txt").getReader();
+            String line;
+            String dna = "";
+            String id = "";
+            while((line = reader.readLine()) != null) {
+
+                if(line.startsWith(">")) {
+                    //if it's not the first data and we found a new id,
+                    //then we can add our Entry to the map
+                    if(id.length() > 0) {
+                        map.put(id,  (countGC(dna)/dna.length()*100));
+                    }
+
+                    // we have to trim off the '>' from the id
+                    id = line.substring(1,line.length());
+
+                    //after we found an id reset the dna string
+                    dna = "";
+                } else {
+                    //dna line
+                    dna += line;
+                }
+            }
+            map.put(id,  (countGC(dna)/dna.length()*100));
+
+            double max = 0;
+            String maxID = "";
+            for(Map.Entry<String, Double> entry : map.entrySet()) {
+                if(entry.getValue() > max) {
+                    max = entry.getValue();
+                    maxID = entry.getKey();
+                }
+            }
+
+            OutputMaker outputMaker = new OutputMaker("rosalind_gc_out","txt");
+            outputMaker.makeOutput(maxID + "\n" + max);
+        }
+    }
+
+    private static double countGC(String str) {
+        int sum = 0;
+        for (char ch : str.toCharArray()) {
+            if(ch == 'G' || ch == 'C') {
+                sum++;
+            }
+        }
+        return sum;
     }
 }
