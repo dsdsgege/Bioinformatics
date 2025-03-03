@@ -1,4 +1,6 @@
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -198,8 +200,12 @@ public class Main {
                 }
             }
 
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            symbols.setDecimalSeparator('.');
+            DecimalFormat df = new DecimalFormat("0.000000",symbols);
+            String maxInStr = df.format(max);
             OutputMaker outputMaker = new OutputMaker("rosalind_gc_out","txt");
-            outputMaker.makeOutput(maxID + "\n" + max);
+            outputMaker.makeOutput(maxID + "\n" + maxInStr);
         }
     }
 
